@@ -12,6 +12,7 @@ async function loadFeed(feeds: string[]) {
 
     for (let f of feeds) {
         results[f] = await requestFeeds(f);
+        results[`c ${f}`] = await fetch(`https://www.reddit.com/r/${f}.json`);
     }
 
     console.log('got results', results);
