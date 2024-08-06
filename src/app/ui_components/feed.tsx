@@ -11,8 +11,10 @@ async function loadFeed(feeds: string[]) {
     let results: Record<string, any> = {}
 
     for (let f of feeds) {
-        results[f] = requestFeeds(f);
+        results[f] = await requestFeeds(f);
     }
+
+    console.log('got results', results);
 
     return results
 }
