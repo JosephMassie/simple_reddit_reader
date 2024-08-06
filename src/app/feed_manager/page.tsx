@@ -1,3 +1,3 @@
 export default function FeedManager() {
-    return <div>Feed Manager</div>
+    return <div>Feed Manager</div>;
 }
