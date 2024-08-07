@@ -1,6 +1,7 @@
 'use client';
 
 import { ReactNode, useState } from 'react';
+import { Button, LoadingWheel } from './general';
 
 interface RawRedditData extends Response {
     data: Record<string, string>;
@@ -38,8 +39,6 @@ async function loadFeed(feeds: string[]): Promise<FeedData> {
         results[f] = (await response.json()).data;
     }
 
-    console.log('got results', results);
-
     return results;
 }
 
@@ -66,7 +65,7 @@ const buildPost = (post: RedditPost, index: number): ReactNode => {
 
 const displayFeed = (feed: FeedData): React.ReactNode => {
     return (
-        <div className="flex flex-col mt-10 border-t-2 border-white">
+        <>
             {Object.keys(feed).map((topic) => {
                 const posts = feed[topic].children;
                 return (
@@ -76,26 +75,48 @@ const displayFeed = (feed: FeedData): React.ReactNode => {
                     </div>
                 );
             })}
-        </div>
+        </>
     );
 };
 
 type FeedState = 'empty' | 'loading' | 'filled';
 
-export default function Feed() {
-    const [topics, setTopics] = useState(['news', 'facepalm']);
+export default function Feed({ topics = ['news'] }: { topics?: string[] }) {
     const [feeds, setFeeds] = useState({} as FeedData);
     const [state, setState] = useState('empty' as FeedState);
 
+    // Perform a single initial load
+    if (topics.length > 0 && state === 'empty') {
+        setState('loading');
+        loadFeed(topics).then((f) => {
+            setState('filled');
+            setFeeds(f);
+        });
+    }
+
     return (
         <>
-            <button
-                className="mt-2 bg-red-800 px-4 py-2 rounded-3xl"
-                onClick={() => loadFeed(topics).then((f) => setFeeds(f))}
+            <Button
+                className="relative mt-2 mx-auto sm:mx-0"
+                disabled={topics.length === 0}
+                onClick={() => {
+                    setState('loading');
+
+                    loadFeed(topics).then((f) => {
+                        setState('filled');
+                        setFeeds(f);
+                    });
+                }}
             >
                 Load Feed
-            </button>
-            {(feeds && displayFeed(feeds)) || <div>Feed Empty</div>}
+            </Button>
+            <div className="flex flex-col mt-8 pt-4 border-t-2 border-white">
+                {state === 'empty' && (
+                    <div className="text-3xl">Feed is empty</div>
+                )}
+                {state === 'loading' && <LoadingWheel />}
+                {state === 'filled' && displayFeed(feeds)}
+            </div>
         </>
     );
 }
