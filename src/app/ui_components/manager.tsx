@@ -57,23 +57,25 @@ export default function Manager({
     const renderMoreTopics = (newTopics: SubRedditData[]) => {
         return (
             <div className="transition-all flex flex-col">
-                {newTopics.map(({ display_name, description, type }) => {
+                {newTopics.map(({ display_name, description, type }, i) => {
                     const isIncluded = topics.includes(display_name);
 
                     return (
                         <div
+                            key={i}
                             className={clsx(
-                                'p-2 rounded-md bg-gray-400 text-black overflow-hidden mb-2 last:mb-0 grid auto-rows-min gap-y-2 gap-x-4 transition-all duration-500',
+                                'p-2 h-full grid auto-rows-min gap-y-2 gap-x-4 rounded-md bg-gray-400 text-black leading-4 transition-all overflow-hidden duration-500',
                                 {
-                                    'max-h-screen': !isIncluded,
-                                    'opacity-0 max-h-0 p-0 mb-0': isIncluded,
+                                    'max-h-screen mb-2 last:mb-0': !isIncluded,
+                                    'max-h-0 mb-0 opacity-0': isIncluded,
                                 }
                             )}
                             style={{
-                                gridTemplateColumns: 'fit-content(1%) 1fr',
+                                gridTemplateColumns: 'min-content 1fr',
+                                gridTemplateRows: 'min-content 1fr',
                             }}
                         >
-                            <div className="font-bold text-nowrap">
+                            <div className="font-bold text-nowrap self-center">
                                 r/{display_name}
                             </div>
                             <button
@@ -90,7 +92,9 @@ export default function Manager({
                                 </div>
                                 add to feed
                             </button>
-                            <p className="col-span-2">{description}</p>
+                            <div className="col-span-2 max-h-40 overflow-auto flex">
+                                <p>{description}</p>
+                            </div>
                         </div>
                     );
                 })}
