@@ -9,7 +9,22 @@ type AppState = 'view' | 'manage';
 
 export default function Home() {
     const [state, setState] = useState('manage' as AppState);
-    const [topics, setTopics] = useState(['news', 'facepalm']);
+    const [topics, setTopics] = useState(['news']);
+
+    const localStateKey = 'srr_feed';
+    const savedTopics = localStorage.getItem(localStateKey);
+
+    const packTopics = (t: string[]) => t.sort().join(',');
+    const unpackTopics = (t: string) => t.split(',');
+
+    if (savedTopics && savedTopics !== packTopics(topics)) {
+        setTopics(unpackTopics(savedTopics));
+    }
+
+    const updateTopics = (t: string[]) => {
+        localStorage.setItem(localStateKey, packTopics(t));
+        setTopics(t);
+    };
 
     return (
         <main
@@ -47,10 +62,7 @@ export default function Home() {
                 <div className="relative bg-slate-800 text-white rounded-xl sm:rounded-l-none sm:rounded-r-xl p-4">
                     {state === 'view' && <Feed topics={topics} />}
                     {state === 'manage' && (
-                        <Manager
-                            topics={topics}
-                            updateTopics={(newTopics) => setTopics(newTopics)}
-                        />
+                        <Manager topics={topics} updateTopics={updateTopics} />
                     )}
                 </div>
             </div>
