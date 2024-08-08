@@ -14,35 +14,37 @@ export default function Home() {
     return (
         <main
             role="main"
-            className="h-screen overflow-y-auto bg-slate-600 m-0 text-white pt-10 px-[15px]"
+            className="h-screen overflow-y-auto bg-slate-400 m-0 text-black px-1 sm:px-[15px]"
         >
             <div
-                className="sm:container min-h-[500px] mx-auto flex flex-col sm:grid gap-y-[20px]"
+                className="relative sm:container min-h-[500px] my-4 mx-auto flex flex-col sm:grid gap-y-2 sm:gap-y-[20px]"
                 style={{
                     gridTemplateColumns: '20% 80%',
                     gridTemplateRows: 'min-content',
                 }}
             >
-                <div className="col-span-2">
+                <div className="col-span-2 mb-6 sm:mb-0">
                     <h1 className="text-center text-3xl">
                         Simple Reddit Reader
                     </h1>
                 </div>
-                <div className="flex sm:flex-col bg-gray-500 p-4 rounded-l-xl">
-                    <Button
-                        onClick={() => setState('view')}
-                        className="mx-auto sm:mb-4"
-                    >
-                        Feed
-                    </Button>
-                    <Button
-                        onClick={() => setState('manage')}
-                        className="mx-auto"
-                    >
-                        Manage
-                    </Button>
+                <div className="z-10 sticky top-1 sm:top-0 sm:relative bg-gray-600 p-4 rounded-xl sm:rounded-r-none sm:rounded-l-xl shadow-2xl">
+                    <div className="sm:sticky top-2 flex sm:flex-col">
+                        <Button
+                            onClick={() => setState('view')}
+                            className="mx-auto sm:mb-4"
+                        >
+                            Feed
+                        </Button>
+                        <Button
+                            onClick={() => setState('manage')}
+                            className="mx-auto"
+                        >
+                            Manage
+                        </Button>
+                    </div>
                 </div>
-                <div className="relative bg-slate-800 rounded-r-xl p-4">
+                <div className="relative bg-slate-800 text-white rounded-xl sm:rounded-l-none sm:rounded-r-xl p-4">
                     {state === 'view' && <Feed topics={topics} />}
                     {state === 'manage' && (
                         <Manager

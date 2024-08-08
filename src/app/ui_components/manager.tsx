@@ -64,10 +64,11 @@ export default function Manager({
                         <div
                             key={i}
                             className={clsx(
-                                'p-2 h-full grid auto-rows-min gap-y-2 gap-x-4 rounded-md bg-gray-400 text-black leading-4 transition-all overflow-hidden duration-500',
+                                'h-full grid auto-rows-min gap-y-2 gap-x-4 rounded-md bg-gray-400 text-black leading-4 transition-all overflow-hidden duration-500',
                                 {
-                                    'max-h-screen mb-2 last:mb-0': !isIncluded,
-                                    'max-h-0 mb-0 opacity-0': isIncluded,
+                                    'max-h-screen p-2 mb-2 last:mb-0':
+                                        !isIncluded,
+                                    'max-h-0 mb-0 p-0 opacity-0': isIncluded,
                                 }
                             )}
                             style={{

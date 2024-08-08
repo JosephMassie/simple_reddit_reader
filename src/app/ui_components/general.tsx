@@ -17,7 +17,7 @@ export function Button({
     return (
         <button
             className={clsx(
-                `block w-fit min-w-[100px] bg-red-800 py-2 px-4 rounded-xl ${className}`,
+                `block w-fit min-w-[100px] bg-red-800 text-white py-2 px-4 rounded-xl ${className}`,
                 {
                     'hover:bg-red-500 hover:text-black': !disabled,
                     'bg-slate-500 text-black': disabled,

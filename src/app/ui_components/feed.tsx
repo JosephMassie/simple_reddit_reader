@@ -2,6 +2,7 @@
 
 import { ReactNode, useState } from 'react';
 import { Button, LoadingWheel } from './general';
+import sanitizeHtml from 'sanitize-html';
 
 interface RawRedditData extends Response {
     data: Record<string, string>;
@@ -42,22 +43,67 @@ async function loadFeed(feeds: string[]): Promise<FeedData> {
     return results;
 }
 
+function parseHtml(a_html: string) {
+    if (typeof a_html !== 'string') return '';
+    const html = a_html
+        .replace(/&lt;/g, '<')
+        .replace(/&gt;/g, '>')
+        .replace(/&amp;/g, '&')
+        .replace(/&#34;/g, '"')
+        .replace(/&#39;/g, "'");
+    console.log('parsed', html);
+
+    return html;
+}
+
+const createMarkup = (unsafeHtml: string) => ({
+    __html: unsafeHtml,
+});
+
 const buildPost = (post: RedditPost, index: number): ReactNode => {
+    const linkToPost = `${redditUrl}${post.permalink}`;
+
     return (
         <div
             key={index}
-            className="flex flex-col mt-2 border-y-2 border-yellow-100"
+            className="mt-2 p-3 border-2 rounded-md border-red-900 bg-red-900 grid gap-2"
+            style={{
+                gridTemplateColumns: 'min-content 1fr',
+                gridTemplateRows: 'min-content min-content 1fr',
+            }}
         >
-            <a href={`${redditUrl}${post.permalink}`} target="_about">
+            <a
+                href={linkToPost}
+                target="_about"
+                className="font-bold text-xl col-span-2 leading-4"
+            >
                 {post.title}
             </a>
-            <div>by u/{post.author}</div>
-            <span>commets: {post.num_comments}</span>
-            {post.selftext_html && <div>{`${post.selftext_html}`}</div>}
-            {post.url && (
-                <a href={post.url} target="_about">
-                    links out to: {post.url}
-                </a>
+            <div className="whitespace-nowrap text-xs">
+                <span className="font-semibold">By:</span> u/{post.author}
+            </div>
+            <div className="text-xs">
+                <span className="font-semibold">Comments:</span>
+                {` ${post.num_comments}`}
+            </div>
+            {post.url && post.url !== linkToPost && (
+                <div className="col-span-2 whitespace-nowrap overflow-hidden">
+                    <a
+                        href={post.url}
+                        target="_about"
+                        className="block max-w-full overflow-hidden overflow-ellipsis"
+                    >
+                        {post.url}
+                    </a>
+                </div>
+            )}
+            {post.selftext_html && (
+                <div
+                    className="px-4 col-span-2"
+                    dangerouslySetInnerHTML={createMarkup(
+                        sanitizeHtml(parseHtml(post.selftext_html))
+                    )}
+                ></div>
             )}
         </div>
     );
@@ -69,9 +115,15 @@ const displayFeed = (feed: FeedData): React.ReactNode => {
             {Object.keys(feed).map((topic, i) => {
                 const posts = feed[topic].children;
                 return (
-                    <div key={i} className="mt-4 border-t-2 border-t-white">
-                        <h2>{topic}</h2>
-                        {posts.map(({ data: post }, i) => buildPost(post, i))}
+                    <div key={i} className="mt-4 p-2 bg-gray-400 rounded-xl">
+                        <h2 className="text-4xl text-black font-bold">
+                            r/{topic}
+                        </h2>
+                        <div>
+                            {posts.map(({ data: post }, i) =>
+                                buildPost(post, i)
+                            )}
+                        </div>
                     </div>
                 );
             })}
@@ -108,9 +160,9 @@ export default function Feed({ topics = ['news'] }: { topics?: string[] }) {
                     });
                 }}
             >
-                Load Feed
+                Reload Feed
             </Button>
-            <div className="flex flex-col mt-8 pt-4 border-t-2 border-white">
+            <div className="flex flex-col mt-4">
                 {state === 'empty' && (
                     <div className="text-3xl">Feed is empty</div>
                 )}
