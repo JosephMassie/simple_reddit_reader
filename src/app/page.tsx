@@ -11,8 +11,9 @@ export default function Home() {
     const [state, setState] = useState('manage' as AppState);
     const [topics, setTopics] = useState(['news']);
 
-    const localStateKey = 'srr_feed';
-    const savedTopics = localStorage.getItem(localStateKey);
+    const storageKey = 'srr_feed';
+    let storage = typeof window !== 'undefined' ? localStorage : null;
+    const savedTopics = storage && storage.getItem(storageKey);
 
     const packTopics = (t: string[]) => t.sort().join(',');
     const unpackTopics = (t: string) => t.split(',');
@@ -22,7 +23,7 @@ export default function Home() {
     }
 
     const updateTopics = (t: string[]) => {
-        localStorage.setItem(localStateKey, packTopics(t));
+        if (storage) storage.setItem(storageKey, packTopics(t));
         setTopics(t);
     };
 
